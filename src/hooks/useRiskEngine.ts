@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { CrimeIncident, GridCell } from '../types/CrimeIncident';
 
-const GRID_SIZE = 0.05; // High granularity for city hotspots (~5km)
+const GRID_SIZE = 0.02; // Very high granularity for street-level city hotspots (~2km)
 
 export const useRiskEngine = (incidents: CrimeIncident[], filters: { category: string, time: string }) => {
   return useMemo(() => {

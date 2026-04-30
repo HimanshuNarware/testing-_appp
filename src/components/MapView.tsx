@@ -1,12 +1,16 @@
-import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup, useMap, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { GridCell } from '../types/CrimeIncident';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+
+export type MapStyle = 'political' | 'geographic' | 'terrain' | 'minimal';
 
 interface MapViewProps {
   data: GridCell[];
   center?: [number, number];
   zoom?: number;
+  isDark?: boolean;
+  mapStyle?: MapStyle;
 }
 
 function MapUpdater({ center, zoom }: { center: [number, number], zoom: number }) {
@@ -20,15 +24,67 @@ function MapUpdater({ center, zoom }: { center: [number, number], zoom: number }
   return null;
 }
 
-export default function MapView({ data, center = [20.5937, 78.9629], zoom = 5 }: MapViewProps) {
+export default function MapView({ 
+  data, 
+  center = [20.5937, 78.9629], 
+  zoom = 5, 
+  isDark = true,
+  mapStyle = 'political'
+}: MapViewProps) {
+  const [geoData, setGeoData] = useState<any>(null);
+
+  useEffect(() => {
+    // Fetch simplified Indian state boundaries for clear borders
+    fetch('https://raw.githubusercontent.com/datameet/maps/master/States/Admin2.json')
+      .then(res => res.json())
+      .then(data => setGeoData(data))
+      .catch(err => console.error('Failed to load boundaries', err));
+  }, []);
+
   const getColor = (score: number) => {
     if (score <= 40) return '#f43f5e'; // rose-500
     if (score <= 70) return '#f59e0b'; // amber-500
     return '#10b981'; // emerald-500
   };
 
+  const getTileConfig = () => {
+    switch (mapStyle) {
+      case 'geographic':
+        return {
+          base: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+          ref: "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
+        };
+      case 'terrain':
+        return {
+          base: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}",
+          ref: "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer/tile/{z}/{y}/{x}"
+        };
+      case 'minimal':
+        return {
+          base: isDark 
+            ? "https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
+            : "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png",
+          ref: isDark
+            ? "https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png"
+            : "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png"
+        };
+      case 'political':
+      default:
+        return {
+          base: isDark 
+            ? "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+            : "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+          ref: isDark
+            ? "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
+            : "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
+        };
+    }
+  };
+
+  const tiles = getTileConfig();
+
   return (
-    <div className="w-full h-full bg-slate-900 overflow-hidden">
+    <div className={`w-full h-full overflow-hidden ${isDark ? 'bg-slate-900' : 'bg-slate-100'}`}>
       <MapContainer 
         center={center} 
         zoom={zoom} 
@@ -38,8 +94,38 @@ export default function MapView({ data, center = [20.5937, 78.9629], zoom = 5 }:
       >
         <MapUpdater center={center} zoom={zoom} />
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          key={`${mapStyle}-base-${isDark}`}
+          attribution='&copy; Esri &copy; OpenStreetMap contributors'
+          url={tiles.base}
+        />
+        
+        {geoData && (
+          <GeoJSON 
+            data={geoData} 
+            style={(feature) => {
+              // Generate a stable color based on state name
+              const name = feature?.properties?.ST_NM || '';
+              const hash = name.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
+              const colors = isDark 
+                ? ['#334155', '#475569', '#1e293b', '#0f172a', '#3f3f46']
+                : ['#cbd5e1', '#94a3b8', '#e2e8f0', '#f1f5f9', '#d1d5db'];
+              const color = colors[hash % colors.length];
+
+              return {
+                color: isDark ? '#64748b' : '#475569',
+                weight: 1.5,
+                fillColor: color,
+                fillOpacity: isDark ? 0.15 : 0.05,
+              };
+            }} 
+          />
+        )}
+
+        <TileLayer
+          key={`${mapStyle}-ref-${isDark}`}
+          attribution='&copy; Esri'
+          url={tiles.ref}
+          opacity={0.8}
         />
         
         {data.map((cell) => (

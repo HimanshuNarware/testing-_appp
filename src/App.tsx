@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Header from './components/Header';
-import MapView from './components/MapView';
+import MapView, { MapStyle } from './components/MapView';
 import Legend from './components/Legend';
 import FilterPanel from './components/FilterPanel';
 import PoliceHelpPanel from './components/PoliceHelpPanel';
@@ -10,7 +10,7 @@ import crimeIncidents from './data/crimes.json';
 import { useRiskEngine } from './hooks/useRiskEngine';
 import { CrimeIncident, GridCell } from './types/CrimeIncident';
 import { INDIAN_STATES, StateInfo, INDIAN_CITIES, CityInfo } from './constants/states';
-import { Search, Info, TrendingUp, Shield, Building2, MapPin, AlertTriangle, X, FileText } from 'lucide-react';
+import { Search, Info, TrendingUp, Shield, Building2, MapPin, AlertTriangle, X, FileText, Moon, Sun, Bell, ShieldOff } from 'lucide-react';
 
 export default function App() {
   const [filter, setFilter] = useState<'all' | 'unsafe'>('all');
@@ -20,6 +20,26 @@ export default function App() {
   const [selectedCity, setSelectedCity] = useState<CityInfo | null>(null);
   const [citySearch, setCitySearch] = useState("");
   const [analysisReport, setAnalysisReport] = useState<GridCell[] | null>(null);
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    return saved ? saved === 'dark' : true;
+  });
+  const [mapStyle, setMapStyle] = useState<MapStyle>('political');
+  const [alerts, setAlerts] = useState<any[]>([]);
+
+  // Monitor for "New" high-risk incidents for alerts
+  useMemo(() => {
+    const highRisk = (crimeIncidents as any[]).filter(inc => 
+      inc.type === 'women_safety' || inc.isHighCriminalPresence
+    ).slice(0, 2); // Simulating newest 2 for demo
+    setAlerts(highRisk);
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !isDark;
+    setIsDark(next);
+    localStorage.setItem('theme', next ? 'dark' : 'light');
+  };
 
   const riskFilters = {
     category,
@@ -57,7 +77,70 @@ export default function App() {
   };
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-slate-950 font-sans text-white">
+    <div className={`relative w-full h-screen overflow-hidden font-sans transition-colors duration-500 ${isDark ? 'dark bg-slate-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
+      {/* Real-time Alert System */}
+      <div className="fixed top-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none">
+        <AnimatePresence>
+          {alerts.map((alert, idx) => (
+            <motion.div
+              key={alert.id}
+              initial={{ opacity: 0, x: 100, scale: 0.8 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 100, scale: 0.8 }}
+              transition={{ delay: idx * 0.5 }}
+              className="pointer-events-auto"
+            >
+              <div className={`flex items-center gap-4 p-4 rounded-2xl border ${isDark ? 'bg-slate-900/90 border-rose-500/30' : 'bg-white border-rose-200'} shadow-2xl backdrop-blur-xl w-80`}>
+                <div className="w-10 h-10 rounded-full bg-rose-500/20 flex items-center justify-center text-rose-500 animate-pulse">
+                  <Bell size={18} />
+                </div>
+                <div className="flex-1">
+                  <p className={`text-[10px] font-black uppercase tracking-widest ${isDark ? 'text-rose-400' : 'text-rose-500'}`}>Critical Alert</p>
+                  <p className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{alert.city}: {alert.type.replace('_', ' ')}</p>
+                  <p className="text-[9px] text-slate-500 font-bold uppercase mt-0.5">High Criminal Presence Detected</p>
+                </div>
+                <button 
+                  onClick={() => setAlerts(prev => prev.filter(a => a.id !== alert.id))}
+                  className="text-slate-500 hover:text-rose-500"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {/* Theme & Map Toggle */}
+      <div className="absolute top-6 right-6 z-50 flex items-center gap-3">
+        <div className="flex bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-2xl p-1 shadow-2xl">
+          {(['political', 'geographic', 'terrain', 'minimal'] as MapStyle[]).map((style) => (
+            <button
+              key={style}
+              onClick={() => setMapStyle(style)}
+              className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all ${
+                mapStyle === style 
+                  ? 'bg-emerald-500 text-white shadow-lg' 
+                  : (isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900')
+              }`}
+            >
+              {style}
+            </button>
+          ))}
+        </div>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={toggleTheme}
+          className={`p-3 rounded-2xl border backdrop-blur-xl transition-all shadow-xl ${
+            isDark ? 'bg-white/10 border-white/20 text-yellow-400' : 'bg-slate-900/10 border-slate-900/20 text-slate-900'
+          }`}
+        >
+          {isDark ? <Sun size={20} /> : <Moon size={20} />}
+        </motion.button>
+      </div>
+
       {/* Analysis Report Modal */}
       <AnimatePresence>
         {analysisReport && (
@@ -172,18 +255,20 @@ export default function App() {
         className="absolute top-28 left-6 w-80 flex flex-col gap-4 z-40 overflow-y-auto max-h-[calc(100vh-140px)] no-scrollbar"
       >
         {/* City Intelligence Search */}
-        <div className="p-5 rounded-3xl border border-white/20 bg-white/10 backdrop-blur-xl shadow-2xl">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-emerald-400 mb-4 flex items-center gap-2">
+        <div className={`p-5 rounded-3xl border shadow-2xl transition-colors duration-500 ${isDark ? 'border-white/20 bg-white/10' : 'border-slate-200 bg-white'}`}>
+          <h3 className={`text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
             <Building2 size={14} />
             City Intelligence
           </h3>
           <div className="relative">
             <div className="relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-500 transition-colors" size={16} />
+              <Search className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isDark ? 'text-slate-500 group-focus-within:text-emerald-500' : 'text-slate-400 group-focus-within:text-emerald-500'}`} size={16} />
               <input 
                 type="text" 
                 placeholder="Search Metro Intelligence..." 
-                className="w-full bg-slate-900/50 border border-white/10 rounded-2xl pl-12 pr-4 py-3.5 text-sm font-medium text-white focus:outline-none focus:border-emerald-500 transition-all placeholder:text-slate-600 shadow-inner"
+                className={`w-full border rounded-2xl pl-12 pr-4 py-3.5 text-sm font-medium transition-all shadow-inner ${
+                  isDark ? 'bg-slate-900/50 border-white/10 text-white focus:border-emerald-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-emerald-500'
+                }`}
                 value={citySearch}
                 onChange={(e) => setCitySearch(e.target.value)}
               />
@@ -233,9 +318,26 @@ export default function App() {
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h4 className="text-xl font-black text-white italic tracking-tighter uppercase">{selectedCity.name}</h4>
-                  <p className="text-[10px] text-emerald-400 font-bold tracking-widest uppercase">State Intel: {selectedCity.state}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <p className="text-[10px] text-emerald-400 font-bold tracking-widest uppercase">State Intel: {selectedCity.state}</p>
+                    <span className="w-1 h-1 bg-slate-700 rounded-full"></span>
+                    <p className="text-[9px] text-slate-500 font-bold uppercase">{selectedCity.dataSource}</p>
+                  </div>
                 </div>
-                <button onClick={() => setSelectedCity(null)} className="text-slate-600 hover:text-white">✕</button>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => {
+                      const toastId = Math.random().toString();
+                      setAlerts(prev => [...prev, { id: toastId, city: selectedCity.name, type: 'api_sync', isHighCriminalPresence: true }]);
+                      setTimeout(() => setAlerts(prev => prev.filter(a => a.id !== toastId)), 5000);
+                    }}
+                    title="Simulate Live API Sync"
+                    className="p-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 rounded-xl transition-all"
+                  >
+                    <TrendingUp size={14} />
+                  </button>
+                  <button onClick={() => setSelectedCity(null)} className="text-slate-600 hover:text-white transition-colors">✕</button>
+                </div>
               </div>
               
               <div className="grid grid-cols-2 gap-3 mb-4">
@@ -248,6 +350,18 @@ export default function App() {
                   <p className="text-xl font-black text-white">{selectedCity.activeCriminals}</p>
                 </div>
               </div>
+
+              {selectedCity.policePortal && (
+                <a 
+                  href={selectedCity.policePortal} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-full mb-3 flex items-center justify-center gap-2 py-2 px-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all group"
+                >
+                  <Shield size={12} className="text-emerald-500 group-hover:scale-110 transition-transform" />
+                  <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Access Official Police Portal</span>
+                </a>
+              )}
 
               <div className="flex items-center gap-2 p-2 bg-rose-500/10 border border-rose-500/20 rounded-xl">
                  <AlertTriangle size={14} className="text-rose-500 animate-pulse" />
@@ -355,6 +469,8 @@ export default function App() {
           data={finalData} 
           center={selectedCity?.coordinates || selectedState?.coordinates || [20.5937, 78.9629]} 
           zoom={selectedCity?.zoom || selectedState?.zoom || 5} 
+          isDark={isDark}
+          mapStyle={mapStyle}
         />
       </main>
       
