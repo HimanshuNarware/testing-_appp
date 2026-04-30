@@ -1,0 +1,30 @@
+[
+  {"id": "c1", "lat": 19.0760, "lng": 72.8777, "type": "women_safety", "severity": 4, "timestamp": "2026-04-20T22:00:00Z", "city": "Mumbai", "isHighCriminalPresence": true},
+  {"id": "c2", "lat": 19.1000, "lng": 72.8500, "type": "harrasment", "severity": 3, "timestamp": "2026-04-30T01:30:00Z", "city": "Mumbai", "isHighCriminalPresence": false},
+  {"id": "c3", "lat": 28.6139, "lng": 77.2090, "type": "women_safety", "severity": 5, "timestamp": "2026-04-30T04:00:00Z", "city": "Delhi", "isHighCriminalPresence": true},
+  {"id": "c4", "lat": 28.6500, "lng": 77.2500, "type": "domestic_violence", "severity": 4, "timestamp": "2026-04-28T10:00:00Z", "city": "Delhi", "isHighCriminalPresence": false},
+  {"id": "c5", "lat": 12.9716, "lng": 77.5946, "type": "theft", "severity": 2, "timestamp": "2026-04-30T01:00:00Z", "city": "Bangalore", "isHighCriminalPresence": false},
+  {"id": "c15", "lat": 12.9300, "lng": 77.6300, "type": "women_safety", "severity": 3, "timestamp": "2026-04-30T05:20:00Z", "city": "Bangalore", "isHighCriminalPresence": true},
+  
+  {"id": "m-loc1", "lat": 19.0176, "lng": 72.8561, "type": "harrasment", "severity": 4, "timestamp": "2026-03-15T18:00:00Z", "city": "Mumbai", "isHighCriminalPresence": true},
+  {"id": "m-loc2", "lat": 19.0600, "lng": 72.8300, "type": "women_safety", "severity": 5, "timestamp": "2026-04-10T22:00:00Z", "city": "Mumbai", "isHighCriminalPresence": true},
+  {"id": "d-loc1", "lat": 28.5355, "lng": 77.2410, "type": "women_safety", "severity": 5, "timestamp": "2026-04-05T20:00:00Z", "city": "Delhi", "isHighCriminalPresence": true},
+  {"id": "d-loc2", "lat": 28.6280, "lng": 77.1717, "type": "harrasment", "severity": 4, "timestamp": "2026-03-25T21:00:00Z", "city": "Delhi", "isHighCriminalPresence": true},
+  
+  {"id": "n1", "lat": 18.0000, "lng": 81.0000, "type": "naxal_activity", "severity": 5, "timestamp": "2026-04-29T12:00:00Z", "city": "Sukma", "isHighCriminalPresence": true},
+  {"id": "n2", "lat": 19.5000, "lng": 80.5000, "type": "naxal_activity", "severity": 4, "timestamp": "2026-04-30T08:00:00Z", "city": "Gadchiroli", "isHighCriminalPresence": true},
+  {"id": "n3", "lat": 23.5000, "lng": 84.5000, "type": "naxal_activity", "severity": 4, "timestamp": "2026-04-28T15:00:00Z", "city": "Latehar", "isHighCriminalPresence": true},
+  {"id": "t1", "lat": 34.0837, "lng": 74.7973, "type": "insurgency", "severity": 5, "timestamp": "2026-04-30T09:00:00Z", "city": "Srinagar", "isHighCriminalPresence": true},
+  {"id": "t2", "lat": 33.7000, "lng": 74.8000, "type": "insurgency", "severity": 4, "timestamp": "2026-04-30T04:30:00Z", "city": "Pulwama", "isHighCriminalPresence": true},
+
+  {"id": "p1", "lat": 18.5204, "lng": 73.8567, "type": "women_safety", "severity": 3, "timestamp": "2026-04-29T21:00:00Z", "city": "Pune", "isHighCriminalPresence": false},
+  {"id": "p2", "lat": 18.5500, "lng": 73.8000, "type": "harrasment", "severity": 4, "timestamp": "2026-04-30T10:00:00Z", "city": "Pune", "isHighCriminalPresence": true},
+  {"id": "h1", "lat": 17.3850, "lng": 78.4867, "type": "women_safety", "severity": 4, "timestamp": "2026-04-30T02:00:00Z", "city": "Hyderabad", "isHighCriminalPresence": true},
+  {"id": "h2", "lat": 17.4000, "lng": 78.4500, "type": "theft", "severity": 3, "timestamp": "2026-04-28T14:00:00Z", "city": "Hyderabad", "isHighCriminalPresence": false},
+  {"id": "k1", "lat": 22.5726, "lng": 88.3639, "type": "harrasment", "severity": 5, "timestamp": "2026-04-30T06:00:00Z", "city": "Kolkata", "isHighCriminalPresence": true},
+  {"id": "k2", "lat": 22.6000, "lng": 88.4000, "type": "domestic_violence", "severity": 4, "timestamp": "2026-04-30T03:30:00Z", "city": "Kolkata", "isHighCriminalPresence": false},
+  {"id": "a1", "lat": 23.0225, "lng": 72.5714, "type": "women_safety", "severity": 2, "timestamp": "2026-04-30T01:15:00Z", "city": "Ahmedabad", "isHighCriminalPresence": false},
+  {"id": "a2", "lat": 23.0500, "lng": 72.6000, "type": "harrasment", "severity": 3, "timestamp": "2026-04-29T23:00:00Z", "city": "Ahmedabad", "isHighCriminalPresence": true},
+  {"id": "c-tn1", "lat": 13.0827, "lng": 80.2707, "type": "women_safety", "severity": 3, "timestamp": "2026-04-30T05:00:00Z", "city": "Chennai", "isHighCriminalPresence": false},
+  {"id": "c-tn2", "lat": 13.0500, "lng": 80.2000, "type": "harrasment", "severity": 4, "timestamp": "2026-04-30T08:30:00Z", "city": "Chennai", "isHighCriminalPresence": true}
+]

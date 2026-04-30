@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "coordinates": [19.0760, 72.8777],
+    "crimeRate": 80,
+    "safetyScore": 35
+  },
+  {
+    "id": 2,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "coordinates": [12.9716, 77.5946],
+    "crimeRate": 65,
+    "safetyScore": 55
+  },
+  {
+    "id": 3,
+    "city": "New Delhi",
+    "state": "Delhi",
+    "coordinates": [28.6139, 77.2090],
+    "crimeRate": 120,
+    "safetyScore": 25
+  },
+  {
+    "id": 4,
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "coordinates": [13.0827, 80.2707],
+    "crimeRate": 55,
+    "safetyScore": 75
+  },
+  {
+    "id": 5,
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "coordinates": [17.3850, 78.4867],
+    "crimeRate": 60,
+    "safetyScore": 65
+  },
+  {
+    "id": 6,
+    "city": "Kolkata",
+    "state": "West Bengal",
+    "coordinates": [22.5726, 88.3639],
+    "crimeRate": 70,
+    "safetyScore": 60
+  },
+  {
+    "id": 7,
+    "city": "Pune",
+    "state": "Maharashtra",
+    "coordinates": [18.5204, 73.8567],
+    "crimeRate": 50,
+    "safetyScore": 80
+  },
+  {
+    "id": 8,
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "coordinates": [23.0225, 72.5714],
+    "crimeRate": 45,
+    "safetyScore": 85
+  },
+  {
+    "id": 9,
+    "city": "Jaipur",
+    "state": "Rajasthan",
+    "coordinates": [26.9124, 75.7873],
+    "crimeRate": 85,
+    "safetyScore": 40
+  },
+  {
+    "id": 10,
+    "city": "Lucknow",
+    "state": "Uttar Pradesh",
+    "coordinates": [26.8467, 80.9462],
+    "crimeRate": 95,
+    "safetyScore": 30
+  },
+  {
+    "id": 11,
+    "city": "Indore",
+    "state": "Madhya Pradesh",
+    "coordinates": [22.7196, 75.8577],
+    "crimeRate": 68,
+    "safetyScore": 58
+  },
+  {
+    "id": 12,
+    "city": "Chandigarh",
+    "state": "Punjab/Haryana",
+    "coordinates": [30.7333, 76.7794],
+    "crimeRate": 40,
+    "safetyScore": 90
+  },
+  {
+    "id": 13,
+    "city": "Kochi",
+    "state": "Kerala",
+    "coordinates": [9.9312, 76.2673],
+    "crimeRate": 35,
+    "safetyScore": 95
+  },
+  {
+    "id": 14,
+    "city": "Surat",
+    "state": "Gujarat",
+    "coordinates": [21.1702, 72.8311],
+    "crimeRate": 52,
+    "safetyScore": 70
+  },
+  {
+    "id": 15,
+    "city": "Bhopal",
+    "state": "Madhya Pradesh",
+    "coordinates": [23.2599, 77.4126],
+    "crimeRate": 75,
+    "safetyScore": 45
+  }
+]

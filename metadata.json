@@ -1,0 +1,6 @@
+{
+  "name": "Nari-Shakti: Women's Safety Heatmap",
+  "description": "An interactive map visualizing women's safety across major Indian cities using NCRB-style data metrics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
