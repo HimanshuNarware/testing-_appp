@@ -10,7 +10,7 @@ import crimeIncidents from './data/crimes.json';
 import { useRiskEngine } from './hooks/useRiskEngine';
 import { CrimeIncident, GridCell } from './types/CrimeIncident';
 import { INDIAN_STATES, StateInfo, INDIAN_CITIES, CityInfo } from './constants/states';
-import { Search, Info, TrendingUp, Shield, Building2, MapPin, AlertTriangle, X, FileText, Moon, Sun, Bell, ShieldOff } from 'lucide-react';
+import { Search, TrendingUp, Shield, Building2, MapPin, AlertTriangle, X, FileText, Moon, Sun, Bell, ShieldOff } from 'lucide-react';
 
 export default function App() {
   const [filter, setFilter] = useState<'all' | 'unsafe'>('all');
@@ -20,10 +20,7 @@ export default function App() {
   const [selectedCity, setSelectedCity] = useState<CityInfo | null>(null);
   const [citySearch, setCitySearch] = useState("");
   const [analysisReport, setAnalysisReport] = useState<GridCell[] | null>(null);
-  const [isDark, setIsDark] = useState(() => {
-    const saved = localStorage.getItem('theme');
-    return saved ? saved === 'dark' : true;
-  });
+  const [isDark] = useState(true);
   const [mapStyle, setMapStyle] = useState<MapStyle>('political');
   const [alerts, setAlerts] = useState<any[]>([]);
 
@@ -35,11 +32,7 @@ export default function App() {
     setAlerts(highRisk);
   }, []);
 
-  const toggleTheme = () => {
-    const next = !isDark;
-    setIsDark(next);
-    localStorage.setItem('theme', next ? 'dark' : 'light');
-  };
+
 
   const riskFilters = {
     category,
@@ -114,7 +107,7 @@ export default function App() {
       {/* Theme & Map Toggle */}
       <div className="absolute top-6 right-6 z-50 flex items-center gap-3">
         <div className="flex bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-2xl p-1 shadow-2xl">
-          {(['political', 'geographic', 'terrain', 'minimal'] as MapStyle[]).map((style) => (
+          {(['political', 'geographic', 'minimal'] as MapStyle[]).map((style) => (
             <button
               key={style}
               onClick={() => setMapStyle(style)}
@@ -129,16 +122,7 @@ export default function App() {
           ))}
         </div>
 
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={toggleTheme}
-          className={`p-3 rounded-2xl border backdrop-blur-xl transition-all shadow-xl ${
-            isDark ? 'bg-white/10 border-white/20 text-yellow-400' : 'bg-slate-900/10 border-slate-900/20 text-slate-900'
-          }`}
-        >
-          {isDark ? <Sun size={20} /> : <Moon size={20} />}
-        </motion.button>
+
       </div>
 
       {/* Analysis Report Modal */}
@@ -247,7 +231,7 @@ export default function App() {
         <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
       </div>
 
-      <Header />
+      <Header isDark={isDark} mapStyle={mapStyle} />
       
       <motion.div 
         initial={{ opacity: 0, x: -50 }}
@@ -313,11 +297,13 @@ export default function App() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="p-5 rounded-3xl border border-emerald-500/20 bg-emerald-500/5 backdrop-blur-xl shadow-2xl"
+              className={`p-5 rounded-3xl border shadow-2xl transition-colors ${
+                !isDark ? 'border-emerald-200 bg-emerald-50/80 backdrop-blur-xl' : 'border-emerald-500/20 bg-emerald-500/5 backdrop-blur-xl'
+              }`}
             >
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h4 className="text-xl font-black text-white italic tracking-tighter uppercase">{selectedCity.name}</h4>
+                  <h4 className={`text-xl font-black italic tracking-tighter uppercase ${!isDark ? 'text-emerald-900' : 'text-white'}`}>{selectedCity.name}</h4>
                   <div className="flex items-center gap-2 mt-1">
                     <p className="text-[10px] text-emerald-400 font-bold tracking-widest uppercase">State Intel: {selectedCity.state}</p>
                     <span className="w-1 h-1 bg-slate-700 rounded-full"></span>
@@ -341,13 +327,13 @@ export default function App() {
               </div>
               
               <div className="grid grid-cols-2 gap-3 mb-4">
-                <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
+                <div className={`p-3 rounded-2xl border ${!isDark ? 'bg-white/60 border-emerald-100' : 'bg-white/5 border-white/5'}`}>
                   <p className="text-[9px] text-slate-500 font-bold uppercase mb-1">NCRB Hotspots</p>
-                  <p className="text-xl font-black text-emerald-400">{selectedCity.hotspots}</p>
+                  <p className={`text-xl font-black ${!isDark ? 'text-emerald-600' : 'text-emerald-400'}`}>{selectedCity.hotspots}</p>
                 </div>
-                <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
+                <div className={`p-3 rounded-2xl border ${!isDark ? 'bg-white/60 border-emerald-100' : 'bg-white/5 border-white/5'}`}>
                   <p className="text-[9px] text-slate-500 font-bold uppercase mb-1">Active Profiles</p>
-                  <p className="text-xl font-black text-white">{selectedCity.activeCriminals}</p>
+                  <p className={`text-xl font-black ${!isDark ? 'text-emerald-900' : 'text-white'}`}>{selectedCity.activeCriminals}</p>
                 </div>
               </div>
 
@@ -356,10 +342,12 @@ export default function App() {
                   href={selectedCity.policePortal} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-full mb-3 flex items-center justify-center gap-2 py-2 px-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all group"
+                  className={`w-full mb-3 flex items-center justify-center gap-2 py-2 px-3 rounded-xl transition-all group border ${
+                    !isDark ? 'bg-white/80 hover:bg-emerald-100 border-emerald-200' : 'bg-white/5 hover:bg-white/10 border-white/10'
+                  }`}
                 >
                   <Shield size={12} className="text-emerald-500 group-hover:scale-110 transition-transform" />
-                  <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Access Official Police Portal</span>
+                  <span className={`text-[9px] font-black uppercase tracking-widest ${!isDark ? 'text-emerald-700' : 'text-slate-300'}`}>Access Official Police Portal</span>
                 </a>
               )}
 
@@ -371,15 +359,21 @@ export default function App() {
           )}
         </AnimatePresence>
 
-        <div className="p-5 rounded-3xl border border-white/20 bg-white/10 backdrop-blur-xl shadow-2xl">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
+        <div className={`p-5 rounded-3xl border backdrop-blur-xl shadow-2xl transition-colors ${
+          !isDark ? 'bg-white/70 border-slate-300' : 'bg-white/10 border-white/20'
+        }`}>
+          <h3 className={`text-xs font-semibold uppercase tracking-widest mb-4 flex items-center gap-2 ${
+            !isDark ? 'text-slate-600' : 'text-slate-400'
+          }`}>
             <Search size={14} className="text-rose-500" />
             Regional Analysis
           </h3>
           <select 
             onChange={(e) => handleStateChange(e.target.value)}
             value={selectedState?.name || ""}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-medium text-white focus:outline-none focus:border-rose-500 active:bg-slate-900 transition-all cursor-pointer"
+            className={`w-full border rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-rose-500 active:bg-slate-900 transition-all cursor-pointer ${
+              !isDark ? 'bg-slate-50/80 border-slate-300 text-slate-900' : 'bg-white/5 border-white/10 text-white'
+            }`}
           >
             <option value="" className="bg-slate-900 text-slate-400">Select Region...</option>
             {INDIAN_STATES.map(state => (
@@ -393,26 +387,31 @@ export default function App() {
         <AnimatePresence>
           {selectedState && (
             <motion.div
+              key="ncrb-report"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="p-5 rounded-3xl border border-white/20 bg-rose-500/10 backdrop-blur-xl shadow-2xl relative overflow-hidden group"
+              className="overflow-hidden"
             >
-              <div className="absolute -right-4 -top-4 text-rose-500/10 group-hover:scale-110 transition-transform duration-700">
-                <Shield size={120} />
-              </div>
-              <div className="relative z-10">
-                <h4 className="text-lg font-black text-white italic tracking-tighter mb-1 uppercase">NCRB REPORT: {selectedState.name}</h4>
-                <p className="text-[10px] text-rose-400 font-bold uppercase tracking-widest mb-4">Official State Metrics</p>
-                
-                <div className="grid grid-cols-1 gap-3">
-                  <div className="flex items-center justify-between p-2 bg-white/5 rounded-lg border border-white/5">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase">Total Crimes</span>
-                    <span className="text-sm font-black text-rose-100">{selectedState.ncrbStats.totalCrimes.toLocaleString()}</span>
-                  </div>
-                  <div className="flex items-center justify-between p-2 bg-white/5 rounded-lg border border-white/5">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase">Conviction Rate</span>
-                    <span className="text-sm font-black text-emerald-400">{selectedState.ncrbStats.convictionRate}%</span>
+              <div className={`p-5 rounded-3xl border backdrop-blur-xl shadow-2xl relative group transition-colors mt-2 ${
+                !isDark ? 'bg-rose-50/80 border-rose-200' : 'bg-rose-500/10 border-white/20'
+              }`}>
+                <div className="absolute -right-4 -top-4 text-rose-500/10 group-hover:scale-110 transition-transform duration-700">
+                  <Shield size={120} />
+                </div>
+                <div className="relative z-10 ">
+                  <h4 className={`text-lg font-black italic tracking-tighter mb-1 uppercase ${!isDark ? 'text-slate-900' : 'text-white'}`}>NCRB REPORT: {selectedState.name}</h4>
+                  <p className="text-[10px] text-rose-500 font-bold uppercase tracking-widest mb-4">Official State Metrics</p>
+                  
+                  <div className="grid grid-cols-1 gap-3">
+                    <div className={`flex items-center justify-between p-2 rounded-lg border ${!isDark ? 'bg-white border-slate-200' : 'bg-white/5 border-white/5'}`}>
+                      <span className={`text-[10px] font-bold uppercase ${!isDark ? 'text-slate-500' : 'text-slate-400'}`}>Total Crimes</span>
+                      <span className={`text-sm font-black ${!isDark ? 'text-rose-600' : 'text-rose-100'}`}>{selectedState.ncrbStats.totalCrimes.toLocaleString()}</span>
+                    </div>
+                    <div className={`flex items-center justify-between p-2 rounded-lg border ${!isDark ? 'bg-white border-slate-200' : 'bg-white/5 border-white/5'}`}>
+                      <span className={`text-[10px] font-bold uppercase ${!isDark ? 'text-slate-500' : 'text-slate-400'}`}>Conviction Rate</span>
+                      <span className="text-sm font-black text-emerald-500">{selectedState.ncrbStats.convictionRate}%</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -423,21 +422,27 @@ export default function App() {
         <FilterPanel 
           currentFilter={filter} 
           onFilterChange={setFilter} 
+          isDark={isDark}
+          mapStyle={mapStyle}
         />
         
-        <div className="p-5 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl shadow-2xl">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-3">Intelligence Filters</h3>
+        <div className={`p-5 rounded-2xl border backdrop-blur-xl shadow-2xl transition-colors ${
+          !isDark ? 'bg-white/70 border-slate-300' : 'bg-white/10 border-white/20'
+        }`}>
+          <h3 className={`text-xs font-semibold uppercase tracking-widest mb-3 ${!isDark ? 'text-slate-600' : 'text-slate-400'}`}>Intelligence Filters</h3>
           <div className="space-y-3">
             <div>
               <p className="text-[9px] font-bold text-slate-500 uppercase mb-2">Category</p>
               <select 
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-2 text-xs font-medium text-white focus:outline-none focus:border-rose-500"
+                className={`w-full border rounded-lg px-2 py-2 text-xs font-medium focus:outline-none focus:border-rose-500 transition-all ${
+                  !isDark ? 'bg-slate-50 border-slate-300 text-slate-900' : 'bg-white/5 border-white/10 text-white'
+                }`}
               >
                 <option value="all" className="bg-slate-900">All Crimes</option>
                 <option value="women_safety" className="bg-slate-900">Women Safety</option>
-                <option value="conflict_zones" className="bg-slate-900 text-rose-400 font-bold">Conflict Zones (Naxal/Border)</option>
+                <option value="conflict_zones" className="bg-slate-900 text-rose-400 font-bold">Conflict Zones (Border)</option>
                 <option value="harrasment" className="bg-slate-900">Harassment</option>
                 <option value="domestic_violence" className="bg-slate-900">Domestic Violence</option>
               </select>
@@ -450,7 +455,9 @@ export default function App() {
                     key={t}
                     onClick={() => setTimeFilter(t)}
                     className={`flex-1 py-1.5 rounded-md text-[10px] font-black uppercase transition-all ${
-                      timeFilter === t ? 'bg-rose-500 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10'
+                      timeFilter === t 
+                        ? 'bg-rose-500 text-white' 
+                        : (!isDark ? 'bg-slate-200/50 text-slate-500 hover:bg-slate-200' : 'bg-white/5 text-slate-400 hover:bg-white/10')
                     }`}
                   >
                     {t}
@@ -461,7 +468,7 @@ export default function App() {
           </div>
         </div>
 
-        <Legend />
+        <Legend isDark={isDark} mapStyle={mapStyle} />
       </motion.div>
       
       <main className="absolute inset-0 z-10">
@@ -479,15 +486,19 @@ export default function App() {
         animate={{ opacity: 1, x: 0 }}
         className="absolute top-28 right-6 w-72 flex flex-col gap-4 z-40 overflow-y-auto max-h-[calc(100vh-120px)] no-scrollbar"
       >
-        <PoliceHelpPanel userLocation={selectedCity?.coordinates || selectedState?.coordinates} />
+        <PoliceHelpPanel userLocation={selectedCity?.coordinates || selectedState?.coordinates} isDark={isDark} mapStyle={mapStyle} />
         
         <SafetyIntelligence 
           gridData={gridData} 
           onShowReport={(zones) => setAnalysisReport(zones)} 
+          isDark={isDark}
+          mapStyle={mapStyle}
         />
         
-        <div className="p-5 rounded-3xl border border-white/20 bg-white/10 backdrop-blur-xl shadow-2xl hidden md:block">
-          <div className="flex items-center justify-between mb-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+        <div className={`p-5 rounded-3xl border backdrop-blur-xl shadow-2xl hidden md:block transition-colors ${
+          !isDark ? 'bg-white/70 border-slate-300' : 'bg-white/10 border-white/20'
+        }`}>
+          <div className={`flex items-center justify-between mb-3 text-[10px] font-bold uppercase tracking-widest ${!isDark ? 'text-slate-600' : 'text-slate-400'}`}>
             <span>Criminal Activity Feed</span>
             <span className="inline-block w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse"></span>
           </div>
@@ -496,8 +507,8 @@ export default function App() {
               <div key={inc.id} className={`flex gap-3 items-start border-l-2 ${inc.isHighCriminalPresence ? 'border-amber-500' : 'border-rose-500/30'} pl-3`}>
                 <div className="w-full">
                   <div className="flex justify-between items-start">
-                    <p className="text-[11px] font-bold text-white/90 leading-tight">{inc.city} Detected</p>
-                    <span className="text-[8px] font-black text-rose-400 uppercase">Live Intel</span>
+                    <p className={`text-[11px] font-bold leading-tight ${!isDark ? 'text-slate-900' : 'text-white/90'}`}>{inc.city} Detected</p>
+                    <span className="text-[8px] font-black text-rose-500 uppercase">Live Intel</span>
                   </div>
                   <p className="text-[9px] text-slate-500 uppercase font-black tracking-tighter mt-1">
                     {inc.type.replace('_', ' ')} • {inc.isHighCriminalPresence ? '🔴 ACTIVE CRIMINAL PRESENCE' : 'SIG DETECTED'}

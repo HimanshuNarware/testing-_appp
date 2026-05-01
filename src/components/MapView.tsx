@@ -3,7 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import { GridCell } from '../types/CrimeIncident';
 import { useEffect, useState } from 'react';
 
-export type MapStyle = 'political' | 'geographic' | 'terrain' | 'minimal';
+export type MapStyle = 'political' | 'geographic' | 'minimal';
 
 interface MapViewProps {
   data: GridCell[];
@@ -53,11 +53,6 @@ export default function MapView({
         return {
           base: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
           ref: "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
-        };
-      case 'terrain':
-        return {
-          base: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}",
-          ref: "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer/tile/{z}/{y}/{x}"
         };
       case 'minimal':
         return {
@@ -145,7 +140,9 @@ export default function MapView({
               <div className="p-5">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h4 className="text-lg font-bold text-white mb-0 leading-none">Sector Area</h4>
+                    <h4 className="text-lg font-bold text-white mb-0 leading-none">
+                      {cell.incidents.length > 0 ? cell.incidents[0].city : 'Sector Area'}
+                    </h4>
                     <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Grid Intelligence</p>
                   </div>
                   <div className={`px-2 py-1 border rounded-md text-[10px] font-black uppercase ${
