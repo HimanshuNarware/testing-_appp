@@ -31,7 +31,34 @@
   <meta name="twitter:image" content="https://yourdomain.com/preview.png" />
 
   <!-- Favicon -->
-  <link rel="icon" href="/favicon.ico" />
+  <link rel="icon" href="/favicon.ico" sizes="any" id="default-favicon" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <script>
+    // Dynamically crop favicons into circles
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('link[rel="icon"][type="image/png"], link[rel="apple-touch-icon"]').forEach(link => {
+        const img = new Image();
+        img.src = link.href;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          
+          // Draw circular mask
+          ctx.beginPath();
+          ctx.arc(img.width / 2, img.height / 2, Math.min(img.width, img.height) / 2, 0, Math.PI * 2);
+          ctx.clip();
+          ctx.drawImage(img, 0, 0);
+          
+          // Replace link href with new circular image data
+          link.href = canvas.toDataURL('image/png');
+        };
+      });
+    });
+  </script>
 
   <!-- Theme Color -->
   <meta name="theme-color" content="#ff4d6d" />
